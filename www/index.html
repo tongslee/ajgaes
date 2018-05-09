@@ -1,0 +1,428 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Equipment Survey</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+<link type="text/css" rel="stylesheet" href="js/jquery.mobile-1.3.0/jquery.mobile-1.3.0.min.css" />
+<link type="text/css" rel="stylesheet" href="js/jquery.mobile-1.3.0/themes/jqmAJGA.min.css" />
+<link type="text/css" rel="stylesheet" href="css/es.css" />
+<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+<script type="text/javascript">
+//set defaults here
+$(document).on("mobileinit", function(){
+	$.extend($.mobile,{
+		ajaxEnabled:false,
+		defaultPageTransition:'none',
+		pushStateEnabled:false,
+		ignoreContentEnabled :true
+	});
+	
+	$.fn.buttonMarkup.defaults.corners = false;
+});
+</script>
+<script type="text/javascript" src="js/es.js"></script>
+<script type="text/javascript" src="js/jquery.mobile-1.3.0/jquery.mobile-1.3.0.min.js"></script>
+</head>
+
+<body>
+
+<!-----------------------------> 
+<!--Home page--> 
+<!----------------------------->
+<div data-role="page" id="divMain">
+  <div data-role="header" data-theme="b">
+    <h2>Equipment Survey</h2>
+  </div>
+  <div data-role="content">
+    <p align="center"><img src="images/ajga-logo.png" width="150"></p>
+    <ul data-role="listview" data-inset="true" data-theme="d">
+      <li data-icon="gear"><a href="#divSetup">Setup</a></li>
+      <li data-icon="plus"><a href="#divSurvey">Survey</a></li>
+      <li data-icon="bars"><a href="#divList">View List</a></li>
+      <li data-icon="star"><a href="#divUpload">Upload</a></li>
+      <li data-icon="grid"><a href="#divBackUp">Backup</a></li>
+      <li data-icon="delete"><a onClick="navigator.app.exitApp();">Exit</a></li>
+    </ul>
+    <p align="center">v1.2.6.2017</p>
+  </div>
+  <div class="ajgaFooter" data-role="footer" data-position="fixed" data-theme="d">
+    <h1><img src="images/footer_ajga_banner.png" width="312" /></h1>
+  </div>
+</div>
+
+<!-----------------------------> 
+<!--Setup page-->
+<!----------------------------->
+<div data-role="page" id="divSetup">
+  <div data-role="header" data-theme="b"> <a href="#divMain" data-ajax="false" data-icon="home" class="headerButton" data-theme="b">Home</a>
+    <h2>Setup</h2>
+  </div>
+  <div data-role="content">
+    <div data-role="fieldcontain" class="centerCGroup">
+      <div data-role="controlgroup" data-type="horizontal" data-corners="false"> <a data-role="button" onClick="downloadTournaments();" data-icon="refresh" data-theme="b">Update Tourny List</a> <a data-role="button" onClick="downloadPlayers();" data-icon="arrow-d" data-theme="b">Download Pairings</a> </div>
+    </div>
+    <div data-role="fieldcontain" class="setupCGroup">
+      <fieldset data-role="controlgroup" data-corners="false">
+        <select name="sltTList" id="sltTList" data-theme="d">
+          <option value="0">Select a tournament</option>
+        </select>
+        <select name="sltRNo" id="sltRNo" data-theme="d">
+          <option value="1">Day 1</option>
+          <option value="2">Day 2</option>
+          <option value="3">Day 3</option>
+          <option value="4">Day 4</option>
+        </select>
+        <select name="sltCNo" id="sltCNo" data-theme="d">
+          <option value="1">Course 1</option>
+          <option value="2">Course 2</option>
+        </select>
+        <select name="sltHNo" id="sltHNo" data-theme="d">
+          <option value="0">Select a tee or shotgun</option>
+          <option value="1">1st Tee</option>
+          <option value="10">10th Tee</option>
+          <option value="99">Shotgun</option>
+        </select>
+      </fieldset>
+    </div>
+    <div data-role="fieldcontain">
+      <h2>Debug:
+        <select name="sltDebug" id="sltDebug" data-role="slider" onChange="debugModeSlider('divProcessLogs', 'sltDebug')">
+          <option value="off" selected>Off</option>
+          <option value="on">On</option>
+        </select>
+      </h2>
+      <h2 id="infoSetup"></h2>
+      <div id="divProcessLogs" style="display:none;">
+        <textarea name="processLogs" id="processLogs" style="width:95%;height:200px;"></textarea>
+      </div>
+    </div>
+  </div>
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false" data-theme="b">
+    <div data-role="navbar">
+      <ul>
+        <li><a data-icon="gear" class="ui-state-persist" href="#divSetup" data-theme="b">Setup</a></li>
+        <li><a data-icon="plus" href="#divSurvey" data-theme="b">Survey</a></li>
+        <li><a data-icon="bars" href="#divList" data-theme="b">View List</a></li>
+        <li><a data-icon="arrow-u" href="#divUpload" data-theme="b">Upload</a></li>
+        <li><a data-icon="grid" href="#divBackUp" data-theme="b">Backup</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-----------------------------> 
+<!--Survey page--> 
+<!----------------------------->
+<div data-role="page" id="divSurvey">
+  <div data-role="header" data-theme="b" data-position="fixed" data-tap-toggle="false"> <a href="#divMain" data-ajax="false" data-icon="home" class="headerButton" data-theme="b">Home</a>
+    <h2>Survey</h2>
+  </div>
+  <div data-role="content">
+    <div data-role="fieldcontain" class="centerCGroup">
+      <fieldset data-role="controlgroup" data-type="horizontal" data-corners="false">
+        <a data-theme="b" data-role="button" onClick="populateTeetimes();" data-iconpos="right" data-icon="refresh">Refresh Pairings</a>
+        <select data-theme="b" name="sltTeeTime" id="sltTeeTime" onChange="populatePlayerList();">
+          <option value="">Unpopulated</option>
+        </select>
+        <select data-theme="b" name="sltPlayers" id="sltPlayers" onChange="populateSurvey();">
+          <option value="">Unpopulated</option>
+        </select>
+      </fieldset>
+    </div>
+    <div id="fsPlayerESInfo">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="divSurveySlts surveyTable1">
+        <tr class="surveyRow">
+          <td class="equipLabel">Ball:</td>
+          <td>
+            <select style="border-color:red;" data-theme="d" name="Ball" id="Ball" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Driver:</td>
+          <td>
+            <select data-theme="d" name="Driver" id="Driver" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">D-Grip:</td>
+          <td>
+            <select data-theme="d" name="GripsWoods" id="GripsWoods" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">F-Wood:</td>
+          <td>
+            <select data-theme="d" name="FairwayWood" id="FairwayWood" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Hybrid:</td>
+          <td>
+            <select data-theme="d" name="HybridWood" id="HybridWood" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Irons:</td>
+          <td>
+            <select data-theme="d" name="Irons" id="Irons" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">I-Shaft:</td>
+          <td>
+            <select data-theme="d" name="ShaftsIrons" id="ShaftsIrons" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">I-Grip:</td>
+          <td>
+            <select data-theme="d" name="Grips" id="Grips" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Glove:</td>
+          <td>
+            <select data-theme="d" name="Glove" id="Glove" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">P-Wedge:</td>
+          <td>
+            <select data-theme="d" name="PitchingWedge" id="PitchingWedge" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        </table>
+        
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="divSurveySlts surveyTable2">
+        <tr class="surveyRow">
+          <td class="equipLabel">G-Wedge:</td>
+          <td>
+            <select data-theme="d" name="GapWedge" id="GapWedge" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">S-Wedge:</td>
+          <td>
+            <select data-theme="d" name="SandWedge" id="SandWedge" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Putter:</td>
+          <td>
+            <select data-theme="d" name="Putter" id="Putter" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Range Fndr:</td>
+          <td>
+            <select data-theme="d" name="RangeFinder" id="RangeFinder" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Golf Bag:</td>
+          <td>
+            <select data-theme="d" name="GolfBag" id="GolfBag" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Shirt:</td>
+          <td>
+            <select data-theme="d" name="Shirt" id="Shirt" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Shoes:</td>
+          <td>
+            <select data-theme="d" name="Shoes" id="Shoes" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Push Cart:</td>
+          <td>
+            <select data-theme="d" name="PushCart" id="PushCart" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Bottoms:</td>
+          <td>
+            <select data-theme="d" name="Bottoms" id="Bottoms" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="surveyRow">
+          <td class="equipLabel">Hat:</td>
+          <td>
+            <select data-theme="d" name="Hat" id="Hat" data-corners="false">
+              <option value="">INCOMPLETE</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div align="center">
+  	<p>&nbsp;</p>
+    <a onClick="saveSurveyToLocalDB();" data-icon="plus" id="btnWSUpdate" data-theme="c" style="display:none; width:94%;">Save</a>
+  </div>
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false" data-theme="b">
+    <div data-role="navbar">
+      <ul>
+        <li><a data-icon="gear" href="#divSetup" data-theme="b">Setup</a></li>
+        <li><a data-icon="plus" class="ui-state-persist" href="#divSurvey" data-theme="b">Survey</a></li>
+        <li><a data-icon="bars" href="#divList" data-theme="b">View List</a></li>
+        <li><a data-icon="arrow-u" href="#divUpload" data-theme="b">Upload</a></li>
+        <li><a data-icon="grid" href="#divBackUp" data-theme="b">Backup</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-----------------------------> 
+<!--List page--> 
+<!----------------------------->
+<div data-role="page" id="divList">
+  <div data-role="header" data-theme="b" data-position="fixed" data-tap-toggle="false"> <a href="#divMain" data-ajax="false" data-icon="home" class="headerButton" data-theme="b">Home</a>
+    <h2>List</h2>
+    <a class="headerButton" onClick="showStatusList();" data-icon="refresh" data-iconpos="right" data-theme="b">Refresh</a> 
+    <ul data-role="listview">
+        <li class="strokeplayLI" data-role="list-divider" data-theme="d">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td width="50%">Name</td>
+              <td width="25%">Tee Time</td>
+              <td width="25%">Status</td>
+            </tr>
+          </table>
+        </li>
+	</ul>
+  </div>
+  <div data-role="content">
+    <table width="100%" border="0" cellspacing="0" id="tblESList"></table>
+  </div>
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false" data-theme="b">
+    <div data-role="navbar">
+      <ul>
+        <li><a data-icon="gear" href="#divSetup" data-theme="b">Setup</a></li>
+        <li><a data-icon="plus" href="#divSurvey" data-theme="b">Survey</a></li>
+        <li><a data-icon="bars" href="#divList" data-theme="b" class="ui-state-persist">View List</a></li>
+        <li><a data-icon="arrow-u" href="#divUpload" data-theme="b">Upload</a></li>
+        <li><a data-icon="grid" href="#divBackUp" data-theme="b">Backup</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-----------------------------> 
+<!--Upload page--> 
+<!----------------------------->
+<div data-role="page" id="divUpload">
+  <div data-role="header" data-theme="b">
+    <a href="#divMain" data-ajax="false" data-icon="home" class="headerButton" data-theme="b">Home</a>
+    <h2>Upload</h2>
+  </div>
+  <div data-role="content">
+    <div>
+      <div data-role="fieldcontain">
+        <form id="formESUpload">
+          <a data-role="button" data-icon="gear" data-iconpos="top" onClick="initSurveyUpload();">Prep for Upload</a>
+          <a data-role="button" data-icon="arrow-u" data-iconpos="top" onClick="confirmUpload();">Upload to Server</a>
+          <div style="margin-top:30px">
+            <textarea class="ESUploadTxt" name="ESUploadTxt" id="ESUploadTxt" readonly style="width:100%; height:500px;"></textarea>
+          </div>
+        </form>
+        <h2 id="h2PostResult"></h2>
+      </div>
+    </div>
+  </div>
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false" data-theme="b">
+    <div data-role="navbar">
+      <ul>
+        <li><a data-icon="gear" href="#divSetup" data-theme="b">Setup</a></li>
+        <li><a data-icon="plus" href="#divSurvey" data-theme="b">Survey</a></li>
+        <li><a data-icon="bars" href="#divList" data-theme="b">View List</a></li>
+        <li><a data-icon="arrow-u" href="#divUpload" data-theme="b" class="ui-state-persist">Upload</a></li>
+        <li><a data-icon="grid" href="#divBackUp" data-theme="b">Backup</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-----------------------------> 
+<!--Backup page--> 
+<!----------------------------->
+<div data-role="page" id="divBackUp">
+  <div data-role="header" data-theme="b">
+    <a href="#divMain" data-ajax="false" data-icon="home" class="headerButton" data-theme="b">Home</a>
+    <h2>Backup</h2>
+  </div>
+  <div data-role="content">
+    <p>&nbsp;</p>
+    <p><strong>What is this?</strong> Tapping the button below will save all surveys on this device that have been updated--by design, surveys that have NOT been updated will be ignored during backup.</p>
+    <p>This action can be performed many times and will never hurt anything. If you ever experience an error throughout this app or have any concern that data was not uploaded as usual, please tap this button to back up the data.</p>
+    <p>When completed you should see a messages saying <strong>Backup Completed</strong>, which means the data was successfully saved to the AJGA server. You must be connected to the internet to complete the process.</p>
+    <p><strong>Note:</strong> Backed up data is recoverable by the IT department only. In the case that backup data is needed, it will not be available in equipment survey-related programs/reports until the IT department has recovered it.</p>
+    <p>&nbsp;</p>
+    <a data-role="button" data-icon="grid" data-iconpos="top" onClick="backupCurrentData();">Backup Current Data</a>
+    <form id="frmESBackUp">
+      <input type="hidden" id="BkData" name="BkData">
+      <input type="hidden" name="TID" id="TID">
+    </form>
+    <h2 id="h2BKStatus"></h2>
+  </div>
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false" data-theme="b">
+    <div data-role="navbar">
+      <ul>
+        <li><a data-icon="gear" href="#divSetup" data-theme="b">Setup</a></li>
+        <li><a data-icon="plus" href="#divSurvey" data-theme="b">Survey</a></li>
+        <li><a data-icon="bars" href="#divList" data-theme="b">View List</a></li>
+        <li><a data-icon="arrow-u" href="#divUpload" data-theme="b">Upload</a></li>
+        <li><a data-icon="grid" href="#divBackUp" data-theme="b" class="ui-state-persist">Backup</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-----------------------------> 
+<!--end of document--> 
+<!----------------------------->
+</body>
+</html>
