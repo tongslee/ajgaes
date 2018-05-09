@@ -1,9 +1,11 @@
 var equipListStr = 'Ball, Driver, Irons, Putter, FairwayWood, PitchingWedge, GapWedge, SandWedge, GolfBag, Glove, Hat, Shirt, Shoes, TournYear, Grips, ShaftsIrons, HybridWood, GripsWoods, RangeFinder, PushCart, Bottoms';
+var appVer = "v1.5.9.2018.tsl";
 
 //this code runs only once for each page (only the first time each page is loaded)
 $(document).on('pageinit', function(){
 	//upload page
 	$('#ESUploadTxt').val('');
+    $('#appVer').html(appVer);
 });
 
 //this code runs on every page load
